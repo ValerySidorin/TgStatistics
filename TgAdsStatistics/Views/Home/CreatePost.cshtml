@@ -1,0 +1,28 @@
+﻿@model TgAdsStatistics.Models.PostViewModel;
+@{
+    ViewData["Title"] = "CreatePost";
+}
+    <h1 class="display-4">Создание записи о новом посте</h1>
+    <form asp-action="CreatePost" asp-controller="Home">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            @Html.DropDownListFor(Model => Model.ChannelId, ViewBag.Channels as SelectList)
+        </div>
+        <div class="form-group">
+            <label asp-for="Views" class="control-label">Просмотров поста</label>
+            <input type="text" asp-for="Views" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Subscribers" class="control-label">Пришедших подписчиков с поста</label>
+            <input type="text" asp-for="Subscribers" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Cost" class="control-label">Стоимость поста</label>
+            <input type="text" asp-for="Cost" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Добавить" class="btn btn-outline-secondary" />
+        </div>
+    </form>
+
+

@@ -1,0 +1,16 @@
+﻿@model TgAdsStatistics.Models.ChannelViewModel;
+@{
+    ViewData["Title"] = "CreateChannel";
+}
+    <h1 class="display-4">Создание канала</h1>
+    <form asp-action="CreateChannel" asp-controller="Home">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="ChannelName" class="control-label">Название канала</label>
+            <input type="text" asp-for="ChannelName" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Добавить" class="btn btn-outline-secondary" />
+        </div>
+    </form>
+

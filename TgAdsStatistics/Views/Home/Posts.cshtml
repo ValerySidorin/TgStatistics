@@ -1,0 +1,14 @@
+﻿@model IEnumerable<TgAdsStatistics.Models.Post>
+@{
+    ViewData["Title"] = "Posts";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Мои посты</h1>
+    <table>
+        @foreach (var post in Model)
+        {
+            <tr><td>@post.Date</td><td>@post.Channel</td><td>@post.Cost</td><td>@post.Views</td><td>@post.Convercy</td></tr>
+        }
+    </table>
+</div>
