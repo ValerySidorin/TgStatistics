@@ -6,7 +6,7 @@
     <form asp-action="CreatePost" asp-controller="Home">
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="form-group">
-            @Html.DropDownListFor(Model => Model.ChannelId, ViewBag.Channels as SelectList)
+            @Html.DropDownListFor(Model => Model.ChannelId, Model.Channels)
         </div>
         <div class="form-group">
             <label asp-for="Views" class="control-label">Просмотров поста</label>

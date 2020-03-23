@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TgAdsStatistics.Models;
+
+namespace TgAdsStatistics.Extensions
+{
+    public static class ApplicationExtensions
+    {
+        public static Channel Form(this Channel channel, Post post)
+        {
+            channel.NumberOfAdsPosted++;
+            channel.OverallMoneySpent += post.Cost;
+            channel.OverallViews += post.Views;
+            channel.OverallSubscribers += post.Subscribers;
+            channel.AverageCostOfSubscriber = (channel.OverallSubscribers == 0) ? 0 : (channel.OverallMoneySpent / channel.OverallSubscribers);
+            channel.OverallConvercy = (channel.OverallSubscribers == 0) ? 0 : (channel.OverallViews / channel.OverallSubscribers);
+
+            return channel;
+        }
+    }
+}

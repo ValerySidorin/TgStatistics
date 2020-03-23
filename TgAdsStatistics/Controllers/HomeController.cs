@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TgAdsStatistics.Models;
+using TgAdsStatistics.Extensions;
 
 namespace TgAdsStatistics.Controllers
 {
@@ -21,17 +22,20 @@ namespace TgAdsStatistics.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Posts()
+        public IActionResult Posts()
         {
-            return View(await db.Posts.ToListAsync());
+            var posts = db.Posts.Include(p => p.Channel);
+            return View(posts);
         }
 
         [HttpGet]
         public IActionResult CreatePost()
         {
-            SelectList channels = new SelectList(db.Channels, "Id", "ChannelName");
-            ViewBag.Channels = channels;
-            return View();
+            PostViewModel model = new PostViewModel
+            {
+                Channels = new SelectList(db.Channels, "Id", "ChannelName")
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -39,32 +43,28 @@ namespace TgAdsStatistics.Controllers
         {
             if (ModelState.IsValid)
             {
-                Post post = new Post { Date = DateTime.Now.ToString(), Views = model.Views, Subscribers = model.Subscribers, Cost = model.Cost, Channel = model.Channel, ChannelId = model.ChannelId  };
+                Channel channel = await db.Channels.FirstOrDefaultAsync(c => c.Id == model.ChannelId);
+                Post post = new Post { Date = DateTime.Now.ToString(), Views = model.Views, Subscribers = model.Subscribers, Cost = model.Cost, ChannelId = model.ChannelId, Channel = channel };
                 post.Convercy = (post.Subscribers == 0) ? 0 : (post.Views / post.Subscribers);
                 post.SingleSubscriberCost = (post.Subscribers == 0) ? 0 : (post.Cost / post.Subscribers);
                 db.Posts.Add(post);
                 await db.SaveChangesAsync();
 
-                Channel channel = await db.Channels.FirstOrDefaultAsync(c => c.Id == model.ChannelId);
-                channel.NumberOfAdsPosted++;
-                channel.OverallMoneySpent += post.Cost;
-                channel.OverallViews += post.Views;
-                channel.OverallSubscribers += post.Subscribers;
-                channel.AverageCostOfSubscriber = (channel.OverallSubscribers == 0) ? 0 : (channel.OverallMoneySpent / channel.OverallSubscribers);
-                channel.OverallConvercy = (channel.OverallSubscribers == 0) ? 0 : (channel.OverallViews / channel.OverallSubscribers);
-
+                channel.Form(post);
                 db.Channels.Update(channel);
                 await db.SaveChangesAsync();
-                
+
                 return RedirectToAction("Posts");
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Ты дурак? Заполни все поля!");
                 return View(model);
             }
         }
 
+
+
+        [HttpDelete]
         public async Task<IActionResult> DeletePost(int? id)
         {
             if (id != null)
@@ -95,7 +95,6 @@ namespace TgAdsStatistics.Controllers
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Введи название канала, епта!");
                 return View(model);
             }
         }

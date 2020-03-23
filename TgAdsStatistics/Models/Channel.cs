@@ -10,11 +10,11 @@ namespace TgAdsStatistics.Models
         public int Id { get; set; }
         public string ChannelName { get; set; }
         public int NumberOfAdsPosted { get; set; }
-        public float OverallViews { get; set; }
-        public float OverallMoneySpent { get; set; }
-        public float OverallSubscribers { get; set; }
-        public float AverageCostOfSubscriber { get; set; }
-        public float OverallConvercy { get; set; }
+        public int OverallViews { get; set; }
+        public int OverallMoneySpent { get; set; }
+        public int OverallSubscribers { get; set; }
+        public int AverageCostOfSubscriber { get; set; }
+        public int OverallConvercy { get; set; }
         public IEnumerable<Post> Posts { get; set; }
 
         public Channel()

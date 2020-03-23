@@ -8,7 +8,7 @@ namespace TgAdsStatistics.Models
 {
     public class ChannelViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Введите название канала")]
         public string ChannelName { get; set; }
     }
 }
