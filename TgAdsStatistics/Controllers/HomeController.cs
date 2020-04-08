@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching;
 using TgAdsStatistics.Models;
 using TgAdsStatistics.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace TgAdsStatistics.Controllers
 {
+    [ResponseCache(CacheProfileName = "Caching")]
     public class HomeController : Controller
     {
         readonly ApplicationContext db;
@@ -21,10 +24,12 @@ namespace TgAdsStatistics.Controllers
             options.AddConsole();
         });
         ILogger logger;
+        private IMemoryCache cache;
 
-        public HomeController(ApplicationContext context)
+        public HomeController(ApplicationContext context, IMemoryCache memoryCache)
         {
             db = context;
+            cache = memoryCache;
             loggerFactory.AddFile("logger.txt");
             logger = loggerFactory.CreateLogger<HomeController>();
         }
@@ -34,6 +39,13 @@ namespace TgAdsStatistics.Controllers
         {
             Log();
             var posts = db.Posts.Include(p => p.Channel);
+            Post p = null;
+            foreach (var post in posts)
+            {
+                p = post;
+                if (cache.TryGetValue(post.Id, out p))
+                    cache.Set(p.Id, post, TimeSpan.FromMinutes(5));
+            }
             return View(posts);
         }
 
@@ -59,7 +71,11 @@ namespace TgAdsStatistics.Controllers
                 post.Convercy = (post.Subscribers == 0) ? 0 : (post.Views / post.Subscribers);
                 post.SingleSubscriberCost = (post.Subscribers == 0) ? 0 : (post.Cost / post.Subscribers);
                 db.Posts.Add(post);
-                await db.SaveChangesAsync();
+                int operations = await db.SaveChangesAsync();
+                if (operations > 0)
+                {
+                    cache.Set(post.Id, post, TimeSpan.FromMinutes(5));
+                }
 
                 channel.Form(post);
                 db.Channels.Update(channel);
@@ -83,7 +99,14 @@ namespace TgAdsStatistics.Controllers
             {
                 Post post = new Post { Id = id.Value };
                 db.Entry(post).State = EntityState.Deleted;
-                await db.SaveChangesAsync();
+                int operations = await db.SaveChangesAsync();
+                if (operations > 0)
+                {
+                    if (cache.TryGetValue(post.Id, out post))
+                    {
+                        cache.Remove(post.Id);
+                    }
+                }
                 return RedirectToAction("Posts");
             }
             return NotFound();

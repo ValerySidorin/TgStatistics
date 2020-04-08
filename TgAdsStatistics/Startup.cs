@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,11 +30,24 @@ namespace TgAdsStatistics
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddMemoryCache();
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
             });
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options =>
+            {
+                options.CacheProfiles.Add("Caching", new CacheProfile()
+                {
+                    Duration = 300,
+                    Location = ResponseCacheLocation.Any
+                });
+                options.CacheProfiles.Add("NoCaching", new CacheProfile()
+                {
+                    NoStore = true,
+                    Location = ResponseCacheLocation.None
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
