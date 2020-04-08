@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching;
 using TgAdsStatistics.Models;
 using TgAdsStatistics.Extensions;
 using Microsoft.Extensions.Caching.Memory;
