@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,15 +16,23 @@ namespace TgAdsStatistics.Controllers
     public class HomeController : Controller
     {
         readonly ApplicationContext db;
+        ILoggerFactory loggerFactory = LoggerFactory.Create(options =>
+        {
+            options.AddConsole();
+        });
+        ILogger logger;
 
         public HomeController(ApplicationContext context)
         {
             db = context;
+            loggerFactory.AddFile("logger.txt");
+            logger = loggerFactory.CreateLogger<HomeController>();
         }
 
         [HttpGet]
         public IActionResult Posts()
         {
+            Log();
             var posts = db.Posts.Include(p => p.Channel);
             return View(posts);
         }
@@ -31,6 +40,7 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult CreatePost()
         {
+            Log();
             PostViewModel model = new PostViewModel
             {
                 Channels = new SelectList(db.Channels, "Id", "ChannelName")
@@ -41,6 +51,7 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostViewModel model)
         {
+            Log();
             if (ModelState.IsValid)
             {
                 Channel channel = await db.Channels.FirstOrDefaultAsync(c => c.Id == model.ChannelId);
@@ -67,6 +78,7 @@ namespace TgAdsStatistics.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeletePost(int? id)
         {
+            Log();
             if (id != null)
             {
                 Post post = new Post { Id = id.Value };
@@ -80,12 +92,14 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult CreateChannel()
         {
+            Log();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateChannel(ChannelViewModel model)
         {
+            Log();
             if (ModelState.IsValid)
             {
                 Channel channel = new Channel(model.ChannelName, 0, 0, 0, 0);
@@ -102,6 +116,7 @@ namespace TgAdsStatistics.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteChannel(int? id)
         {
+            Log();
             if (id != null)
             {
                 Channel channel = new Channel(id.Value);
@@ -113,15 +128,21 @@ namespace TgAdsStatistics.Controllers
             return NotFound();
         }
 
-        public IActionResult Privacy()
+        public void Log()
         {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            
+            string requestbody;
+            using (Stream stream = Request.Body)
+            {
+                using (StreamReader sr = new StreamReader(stream))
+                {
+                    requestbody = sr.ReadToEnd();
+                }
+            }
+            Logs log = new Logs { DateTime = DateTime.Now, Body = requestbody, Host = Request.Host.ToString(), Method = Request.Method, Path = Request.Path, Protocol = Request.Protocol };
+            db.Logs.Add(log);
+            db.SaveChanges();
+            logger.LogInformation($"{log.DateTime}, {log.Method}, {log.Path}, {log.Host}, {log.Protocol}, {log.Body}");
         }
     }
 }

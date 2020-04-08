@@ -1,0 +1,4 @@
+08.04.2020 11:56:04, GET, /, localhost:44342, HTTP/1.1, 
+08.04.2020 11:56:13, GET, /Home/CreateChannel, localhost:44342, HTTP/1.1, 
+08.04.2020 11:56:30, POST, /Home/CreateChannel, localhost:44342, HTTP/1.1, 
+08.04.2020 11:56:32, GET, /, localhost:44342, HTTP/1.1, 

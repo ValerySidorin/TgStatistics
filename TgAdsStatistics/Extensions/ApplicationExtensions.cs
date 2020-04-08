@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TgAdsStatistics.Models;
+using TgAdsStatistics.Logger;
+using System.IO;
 
 namespace TgAdsStatistics.Extensions
 {
@@ -18,6 +21,13 @@ namespace TgAdsStatistics.Extensions
             channel.OverallConvercy = (channel.OverallSubscribers == 0) ? 0 : (channel.OverallViews / channel.OverallSubscribers);
 
             return channel;
+        }
+
+        public static ILoggerFactory AddFile(this ILoggerFactory loggerFactory, string filename)
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), filename);
+            loggerFactory.AddProvider(new FileLoggerProvider(path));
+            return loggerFactory;
         }
     }
 }
