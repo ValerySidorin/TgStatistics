@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using TgAdsStatistics.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace TgAdsStatistics
 {
@@ -31,6 +32,11 @@ namespace TgAdsStatistics
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddDbContext<UserContext>(options => 
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
             services.AddMemoryCache();
             services.Configure<IISServerOptions>(options =>
             {
@@ -60,8 +66,8 @@ namespace TgAdsStatistics
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
             }
+            app.UseHsts();
             app.UseHttpsRedirection();
             app.UseStaticFiles(new StaticFileOptions() 
             {
@@ -74,6 +80,7 @@ namespace TgAdsStatistics
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

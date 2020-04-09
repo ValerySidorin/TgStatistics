@@ -10,8 +10,8 @@ using TgAdsStatistics.Models;
 namespace TgAdsStatistics.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20200408082522_LoggerDatabase")]
-    partial class LoggerDatabase
+    [Migration("20200409143258_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

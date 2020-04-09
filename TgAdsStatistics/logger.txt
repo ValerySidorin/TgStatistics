@@ -1,0 +1,3 @@
+09.04.2020 17:43:49, GET, /Home/Posts, localhost:44342, HTTP/1.1, 
+09.04.2020 17:54:40, GET, /, localhost:44342, HTTP/1.1, 
+09.04.2020 18:02:40, GET, /, localhost:44342, HTTP/1.1, 
