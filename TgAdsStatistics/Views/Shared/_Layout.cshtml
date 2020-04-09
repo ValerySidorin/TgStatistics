@@ -29,8 +29,10 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateChannel">Добавить канал</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="" asp-controller="Account" asp-action="Logout">Выход</a>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout">
+                                    <button class="text-black-50" type="submit"  asp-controller="Account" asp-action="Logout">Выход</button>
+                                </form>
                             </li>
                         }
                         else
