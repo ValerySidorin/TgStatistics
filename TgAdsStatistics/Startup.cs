@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using TgAdsStatistics.Models;
 using Microsoft.AspNetCore.Identity;
 using TgAdsStatistics.Extensions;
+using TgAdsStatistics.Logger;
 
 namespace TgAdsStatistics
 {
@@ -41,6 +42,7 @@ namespace TgAdsStatistics
             services.AddMemoryCache();
             services.AddSingleton<ContextAccessor>();
             services.AddHttpContextAccessor();
+            services.AddScoped<LoggerManager>();
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;

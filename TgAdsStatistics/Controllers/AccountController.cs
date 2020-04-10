@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using TgAdsStatistics.Extensions;
 using TgAdsStatistics.Logger;
 using TgAdsStatistics.Models;
 using TgAdsStatistics.Models.ViewModels;
@@ -15,32 +12,20 @@ namespace TgAdsStatistics.Controllers
 {
     public class AccountController : Controller
     {
-        private ApplicationContext db;
+        private readonly LoggerManager loggerManager;
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        private ContextAccessor contextAccessor;
-
-        ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+        public AccountController(LoggerManager loggerManager, UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            builder.ClearProviders();
-        });
-        ILogger logger;
-
-        public AccountController(ApplicationContext db, UserManager<User> userManager, SignInManager<User> signInManager, ContextAccessor contextAccessor)
-        {
-            this.db = db;
-            loggerFactory.AddFile("logger.txt");
-            logger = loggerFactory.CreateLogger<AccountController>();
+            this.loggerManager = loggerManager;
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.contextAccessor = contextAccessor;
-
         }
 
         [HttpGet]
         public IActionResult Register()
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             return View();
         }
 
@@ -48,7 +33,7 @@ namespace TgAdsStatistics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             if (ModelState.IsValid)
             {
                 User user = new User { UserName = model.UserName };
@@ -72,7 +57,7 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             return View();
         }
 
@@ -80,7 +65,7 @@ namespace TgAdsStatistics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             if (ModelState.IsValid)
             {
                 var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
@@ -101,7 +86,7 @@ namespace TgAdsStatistics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }

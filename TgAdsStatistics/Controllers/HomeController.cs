@@ -12,6 +12,7 @@ using TgAdsStatistics.Models;
 using TgAdsStatistics.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authorization;
+using TgAdsStatistics.Logger;
 
 namespace TgAdsStatistics.Controllers
 {
@@ -19,26 +20,21 @@ namespace TgAdsStatistics.Controllers
     [ResponseCache(CacheProfileName = "Caching")]
     public class HomeController : Controller
     {
-        readonly ApplicationContext db;
-        ILoggerFactory loggerFactory = LoggerFactory.Create(options =>
-        {
-            options.ClearProviders();
-        });
-        ILogger logger;
+        private readonly LoggerManager loggerManager;
+        private readonly ApplicationContext db;
         private IMemoryCache cache;
 
-        public HomeController(ApplicationContext context, IMemoryCache memoryCache)
+        public HomeController(LoggerManager loggerManager, ApplicationContext db, IMemoryCache memoryCache)
         {
-            db = context;
+            this.loggerManager = loggerManager;
+            this.db = db;
             cache = memoryCache;
-            loggerFactory.AddFile("logger.txt");
-            logger = loggerFactory.CreateLogger<HomeController>();
         }
 
         [HttpGet]
         public IActionResult Posts()
         {
-            Log();
+            loggerManager.Log();
             if (!User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
@@ -57,7 +53,7 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult CreatePost()
         {
-            Log();
+            loggerManager.Log();
             PostViewModel model = new PostViewModel
             {
                 Channels = new SelectList(db.Channels, "Id", "ChannelName")
@@ -68,7 +64,7 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostViewModel model)
         {
-            Log();
+            loggerManager.Log();
             if (ModelState.IsValid)
             {
                 Channel channel = await db.Channels.FirstOrDefaultAsync(c => c.Id == model.ChannelId);
@@ -99,7 +95,7 @@ namespace TgAdsStatistics.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeletePost(int? id)
         {
-            Log();
+            loggerManager.Log();
             if (id != null)
             {
                 Post post = new Post { Id = id.Value };
@@ -120,14 +116,14 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult CreateChannel()
         {
-            Log();
+            loggerManager.Log();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateChannel(ChannelViewModel model)
         {
-            Log();
+            loggerManager.Log();
             if (ModelState.IsValid)
             {
                 Channel channel = new Channel(model.ChannelName, 0, 0, 0, 0);
@@ -144,7 +140,7 @@ namespace TgAdsStatistics.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteChannel(int? id)
         {
-            Log();
+            loggerManager.Log();
             if (id != null)
             {
                 Channel channel = new Channel(id.Value);
@@ -154,23 +150,6 @@ namespace TgAdsStatistics.Controllers
                 return RedirectToAction("Posts");
             }
             return NotFound();
-        }
-
-        public void Log()
-        {
-            
-            string requestbody;
-            using (Stream stream = Request.Body)
-            {
-                using (StreamReader sr = new StreamReader(stream))
-                {
-                    requestbody = sr.ReadToEnd();
-                }
-            }
-            Logs log = new Logs { DateTime = DateTime.Now, Body = requestbody, Host = Request.Host.ToString(), Method = Request.Method, Path = Request.Path, Protocol = Request.Protocol };
-            db.Logs.Add(log);
-            db.SaveChanges();
-            logger.LogInformation($"{log.DateTime}, {log.Method}, {log.Path}, {log.Host}, {log.Protocol}, {log.Body}");
         }
     }
 }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using TgAdsStatistics.Extensions;
+using TgAdsStatistics.Logger;
 using TgAdsStatistics.Models;
 using TgAdsStatistics.Models.ViewModels;
 
@@ -15,41 +15,32 @@ namespace TgAdsStatistics.Controllers
     [Authorize(Roles = "admin")]
     public class AdminController : Controller
     {
-        private ContextAccessor contextAccessor;
+        private readonly LoggerManager loggerManager;
         private readonly UserManager<User> userManager;
-        private ApplicationContext db;
-        ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.ClearProviders();
-        });
-        ILogger logger;
 
-        public AdminController(ApplicationContext db, UserManager<User> userManager, ContextAccessor contextAccessor)
+        public AdminController(LoggerManager loggerService, UserManager<User> userManager, ContextAccessor contextAccessor)
         {
-            this.db = db;
-            this.contextAccessor = contextAccessor;
+            this.loggerManager = loggerService;
             this.userManager = userManager;
-            loggerFactory.AddFile("logger.txt");
-            logger = loggerFactory.CreateLogger<AdminController>();
         }
         [HttpGet]
         public IActionResult Users()
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             return View(userManager.Users.ToList());
         }
 
         [HttpGet]
         public IActionResult Create() 
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateViewModel model)
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             if (ModelState.IsValid)
             {
                 User user = new User { UserName = model.UserName };
@@ -71,7 +62,7 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             User user = await userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -84,7 +75,7 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             if (ModelState.IsValid)
             {
                 User user = await userManager.FindByNameAsync(model.Username);
@@ -110,7 +101,7 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            contextAccessor.Log(db, logger);
+            loggerManager.Log();
             User user = await userManager.FindByIdAsync(id);
 
             if (user != null)
