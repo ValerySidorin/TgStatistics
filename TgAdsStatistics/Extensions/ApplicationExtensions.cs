@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TgAdsStatistics.Models;
 using TgAdsStatistics.Logger;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace TgAdsStatistics.Extensions
 {
