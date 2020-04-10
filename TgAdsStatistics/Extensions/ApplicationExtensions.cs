@@ -25,7 +25,7 @@ namespace TgAdsStatistics.Extensions
 
         public static ILoggerFactory AddFile(this ILoggerFactory loggerFactory, string filename)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), filename);
+            string path = Path.Combine(@"C:\", filename);
             loggerFactory.AddProvider(new FileLoggerProvider(path));
             return loggerFactory;
         }
