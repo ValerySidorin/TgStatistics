@@ -56,3 +56,4 @@
 10.04.2020 10:59:10, GET, /Home/Posts, localhost:44342, HTTP/1.1, 
 10.04.2020 10:59:11, GET, /Home/CreatePost, localhost:44342, HTTP/1.1, 
 10.04.2020 10:59:12, GET, /Home/CreateChannel, localhost:44342, HTTP/1.1, 
+10.04.2020 11:15:39, GET, /Home/Posts, localhost:44342, HTTP/1.1, 

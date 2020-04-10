@@ -14,7 +14,6 @@ namespace TgAdsStatistics
             string adminLogin = "admin";
             string adminPassword = "Admin_228";
 
-
             if (await roleManager.FindByNameAsync("admin") == null)
                 await roleManager.CreateAsync(new IdentityRole("admin"));
 
@@ -23,12 +22,13 @@ namespace TgAdsStatistics
 
             if (await userManager.FindByNameAsync(adminLogin) == null)
             {
-                User user = new User { UserName = adminLogin };
-                var result = await userManager.CreateAsync(user, adminPassword);
+                User admin = new User { UserName = adminLogin };
+                var result = await userManager.CreateAsync(admin, adminPassword);
 
                 if (result.Succeeded)
-                    await userManager.AddToRoleAsync(user, "admin");
+                    await userManager.AddToRoleAsync(admin, "admin");
             }
+
         }
     }
 }
