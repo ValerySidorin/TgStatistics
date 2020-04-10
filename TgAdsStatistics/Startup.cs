@@ -87,7 +87,7 @@ namespace TgAdsStatistics
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Account}/{action=Login}/{id?}");
+                    pattern: "{controller=Home}/{action=Posts}/{id?}");
             });
         }
     }

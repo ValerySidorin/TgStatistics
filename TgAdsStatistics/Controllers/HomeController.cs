@@ -11,9 +11,11 @@ using Microsoft.Extensions.Logging;
 using TgAdsStatistics.Models;
 using TgAdsStatistics.Extensions;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TgAdsStatistics.Controllers
 {
+    [Authorize]
     [ResponseCache(CacheProfileName = "Caching")]
     public class HomeController : Controller
     {
@@ -37,6 +39,10 @@ namespace TgAdsStatistics.Controllers
         public IActionResult Posts()
         {
             Log();
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             var posts = db.Posts.Include(p => p.Channel);
             Post p = null;
             foreach (var post in posts)
