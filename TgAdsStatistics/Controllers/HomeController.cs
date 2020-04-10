@@ -22,7 +22,7 @@ namespace TgAdsStatistics.Controllers
         readonly ApplicationContext db;
         ILoggerFactory loggerFactory = LoggerFactory.Create(options =>
         {
-            options.AddConsole();
+            options.ClearProviders();
         });
         ILogger logger;
         private IMemoryCache cache;

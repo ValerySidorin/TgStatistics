@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using TgAdsStatistics.Models;
 using Microsoft.AspNetCore.Identity;
+using TgAdsStatistics.Extensions;
 
 namespace TgAdsStatistics
 {
@@ -38,6 +39,8 @@ namespace TgAdsStatistics
             });
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
             services.AddMemoryCache();
+            services.AddSingleton<ContextAccessor>();
+            services.AddHttpContextAccessor();
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
