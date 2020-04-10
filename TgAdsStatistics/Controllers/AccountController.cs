@@ -37,6 +37,7 @@ namespace TgAdsStatistics.Controllers
 
                 if (result.Succeeded)
                 {
+                    await userManager.AddToRoleAsync(user, "user");
                     await signInManager.SignInAsync(user, false);
                     return RedirectToAction("Posts", "Home");
                 }

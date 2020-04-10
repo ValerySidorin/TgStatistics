@@ -10,8 +10,8 @@ using TgAdsStatistics.Models;
 namespace TgAdsStatistics.Migrations.User
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20200409144123_AddedUserIdentity")]
-    partial class AddedUserIdentity
+    [Migration("20200410075337_AddedUserIdentityAndRoles")]
+    partial class AddedUserIdentityAndRoles
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

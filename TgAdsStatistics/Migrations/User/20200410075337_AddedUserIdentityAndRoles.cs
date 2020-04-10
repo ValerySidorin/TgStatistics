@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TgAdsStatistics.Migrations.User
 {
-    public partial class AddedUserIdentity : Migration
+    public partial class AddedUserIdentityAndRoles : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
