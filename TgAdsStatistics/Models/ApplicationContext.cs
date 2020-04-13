@@ -10,7 +10,7 @@ namespace TgAdsStatistics.Models
     {
         public DbSet<Channel> Channels { get; set; }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<Logs> Logs { get; set; }
+        public DbSet<Log> Logs { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {

@@ -15,32 +15,41 @@ namespace TgAdsStatistics.Controllers
     [Authorize(Roles = "admin")]
     public class AdminController : Controller
     {
-        private readonly LoggerManager loggerManager;
+        private readonly CustomLoggerManager customLoggerManager;
         private readonly UserManager<User> userManager;
+        private readonly ApplicationContext db;
 
-        public AdminController(LoggerManager loggerService, UserManager<User> userManager, ContextAccessor contextAccessor)
+
+        public AdminController(CustomLoggerManager customLoggerManager, UserManager<User> userManager, ApplicationContext db)
         {
-            this.loggerManager = loggerService;
+            this.customLoggerManager = customLoggerManager;
             this.userManager = userManager;
+            this.db = db;
         }
         [HttpGet]
         public IActionResult Users()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             return View(userManager.Users.ToList());
         }
 
         [HttpGet]
         public IActionResult Create() 
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateViewModel model)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 User user = new User { UserName = model.UserName };
@@ -62,7 +71,9 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             User user = await userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -75,7 +86,9 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 User user = await userManager.FindByNameAsync(model.Username);
@@ -101,7 +114,9 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             User user = await userManager.FindByIdAsync(id);
 
             if (user != null)

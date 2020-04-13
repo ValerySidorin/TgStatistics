@@ -12,20 +12,24 @@ namespace TgAdsStatistics.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly LoggerManager loggerManager;
+        private readonly CustomLoggerManager customLoggerManager;
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        public AccountController(LoggerManager loggerManager, UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly ApplicationContext db;
+        public AccountController(CustomLoggerManager customLoggerManager, UserManager<User> userManager, SignInManager<User> signInManager, ApplicationContext db)
         {
-            this.loggerManager = loggerManager;
+            this.customLoggerManager = customLoggerManager;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.db = db;
         }
 
         [HttpGet]
         public IActionResult Register()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             return View();
         }
 
@@ -33,7 +37,9 @@ namespace TgAdsStatistics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 User user = new User { UserName = model.UserName };
@@ -57,7 +63,9 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             return View();
         }
 
@@ -65,7 +73,9 @@ namespace TgAdsStatistics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
@@ -86,7 +96,9 @@ namespace TgAdsStatistics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }

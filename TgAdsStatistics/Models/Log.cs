@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TgAdsStatistics.Models
 {
-    public class Logs
+    public class Log
     {
         public int Id { get; set; }
         public DateTime DateTime { get; set; }

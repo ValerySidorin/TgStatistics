@@ -10,25 +10,23 @@ using TgAdsStatistics.Models;
 
 namespace TgAdsStatistics.Logger
 {
-    public class LoggerManager
+    public class CustomLoggerManager
     {
         private IHttpContextAccessor httpContextAccessor;
-        private readonly ApplicationContext db;
         private ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
         });
-        private ILogger logger;
+        ILogger logger;
 
-        public LoggerManager(ApplicationContext db, IHttpContextAccessor httpContextAccessor)
+        public CustomLoggerManager(IHttpContextAccessor httpContextAccessor)
         {
             this.httpContextAccessor = httpContextAccessor;
-            this.db = db;
             loggerFactory.AddFile("logger.txt");
             logger = loggerFactory.CreateLogger("FileLogger");
         }
 
-        public void Log()
+        public Log CreateLog()
         {
             string requestbody;
             using (Stream stream = httpContextAccessor.HttpContext.Request.Body)
@@ -38,10 +36,9 @@ namespace TgAdsStatistics.Logger
                     requestbody = sr.ReadToEnd();
                 }
             }
-            Logs log = new Logs { DateTime = DateTime.Now, Body = requestbody, Host = httpContextAccessor.HttpContext.Request.Host.ToString(), Method = httpContextAccessor.HttpContext.Request.Method, Path = httpContextAccessor.HttpContext.Request.Path, Protocol = httpContextAccessor.HttpContext.Request.Protocol };
-            db.Logs.Add(log);
-            db.SaveChanges();
-            logger.LogInformation($"{log.DateTime}, {log.Method}, {log.Path}, {log.Host}, {log.Protocol}, {log.Body}");
+            Log log = new Log { DateTime = DateTime.Now, Body = requestbody, Host = httpContextAccessor.HttpContext.Request.Host.ToString(), Method = httpContextAccessor.HttpContext.Request.Method, Path = httpContextAccessor.HttpContext.Request.Path, Protocol = httpContextAccessor.HttpContext.Request.Protocol };
+            logger.LogInformation($"{log.DateTime}, {log.Method}, {log.Path}, {log.Host}, {log.Protocol}");
+            return log;
         }
     }
 }

@@ -40,9 +40,8 @@ namespace TgAdsStatistics
             });
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
             services.AddMemoryCache();
-            services.AddSingleton<ContextAccessor>();
             services.AddHttpContextAccessor();
-            services.AddScoped<LoggerManager>();
+            services.AddScoped<CustomLoggerManager>();
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;

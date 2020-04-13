@@ -20,13 +20,13 @@ namespace TgAdsStatistics.Controllers
     [ResponseCache(CacheProfileName = "Caching")]
     public class HomeController : Controller
     {
-        private readonly LoggerManager loggerManager;
+        private readonly CustomLoggerManager customLoggerManager;
         private readonly ApplicationContext db;
         private IMemoryCache cache;
 
-        public HomeController(LoggerManager loggerManager, ApplicationContext db, IMemoryCache memoryCache)
+        public HomeController(CustomLoggerManager customLoggerManager, ApplicationContext db, IMemoryCache memoryCache)
         {
-            this.loggerManager = loggerManager;
+            this.customLoggerManager = customLoggerManager;
             this.db = db;
             cache = memoryCache;
         }
@@ -34,7 +34,9 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult Posts()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (!User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
@@ -53,7 +55,9 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult CreatePost()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             PostViewModel model = new PostViewModel
             {
                 Channels = new SelectList(db.Channels, "Id", "ChannelName")
@@ -64,7 +68,9 @@ namespace TgAdsStatistics.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostViewModel model)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 Channel channel = await db.Channels.FirstOrDefaultAsync(c => c.Id == model.ChannelId);
@@ -95,7 +101,9 @@ namespace TgAdsStatistics.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeletePost(int? id)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (id != null)
             {
                 Post post = new Post { Id = id.Value };
@@ -116,14 +124,18 @@ namespace TgAdsStatistics.Controllers
         [HttpGet]
         public IActionResult CreateChannel()
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateChannel(ChannelViewModel model)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (ModelState.IsValid)
             {
                 Channel channel = new Channel(model.ChannelName, 0, 0, 0, 0);
@@ -140,7 +152,9 @@ namespace TgAdsStatistics.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteChannel(int? id)
         {
-            loggerManager.Log();
+            Log log = customLoggerManager.CreateLog();
+            db.Logs.Add(log);
+            db.SaveChanges();
             if (id != null)
             {
                 Channel channel = new Channel(id.Value);
