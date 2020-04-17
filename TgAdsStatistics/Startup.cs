@@ -38,14 +38,29 @@ namespace TgAdsStatistics
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
+
+
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+            }).AddEntityFrameworkStores<UserContext>();
+            services.AddTransient<IUserValidator<User>, CustomUserValidator>();
+
             services.AddMemoryCache();
+
             services.AddHttpContextAccessor();
+            
             services.AddScoped<CustomLoggerManager>();
+
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
             });
+
             services.AddControllersWithViews(options =>
             {
                 options.CacheProfiles.Add("Caching", new CacheProfile()
