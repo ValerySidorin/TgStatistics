@@ -124,5 +124,49 @@ namespace TgAdsStatistics.Controllers
 
             return RedirectToAction("Users");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword(string? id)
+        {
+            User user = await userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound();
+
+            ChangePasswordViewModel model = new ChangePasswordViewModel { Id = user.Id, UserName = user.UserName };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await userManager.FindByIdAsync(model.Id);
+                if (user != null)
+                {
+                    var passwordValidator = HttpContext.RequestServices.GetService(typeof(IPasswordValidator<User>)) as IPasswordValidator<User>;
+                    var passwordHasher = HttpContext.RequestServices.GetService(typeof(IPasswordHasher<User>)) as IPasswordHasher<User>;
+
+                    var result = await passwordValidator.ValidateAsync(userManager, user, model.NewPassword);
+
+                    if (result.Succeeded)
+                    {
+                        passwordHasher.HashPassword(user, model.NewPassword);
+                        await userManager.UpdateAsync(user);
+                        return RedirectToAction("Users");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                            ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            return View(model);
+        }
     }
 }

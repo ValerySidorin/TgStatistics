@@ -9,15 +9,15 @@ namespace TgAdsStatistics.Models.ViewModels
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Login")]
+        [Display(Name = "Имя пользователя")]
         public string UserName { get; set; }
 
         [Required]
-        [Display(Name = "Password")]
+        [Display(Name = "Пароль")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me")]
+        [Display(Name = "Запомнить меня?")]
         public bool RememberMe { get; set; }
     }
 }

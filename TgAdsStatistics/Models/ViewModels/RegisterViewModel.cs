@@ -9,15 +9,15 @@ namespace TgAdsStatistics.Models.ViewModels
     public class RegisterViewModel
     {
         [Required]
-        [Display(Name = "Login")]
+        [Display(Name = "Имя пользователя")]
         public string UserName { get; set; }
         [Required]
-        [Display(Name = "Password")]
+        [Display(Name = "Пароль")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
         [Required]
         [Compare("Password", ErrorMessage = "Passwords are not identical")]
-        [Display(Name = "Confirm Password")]
+        [Display(Name = "Подтвердите пароль")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
     }
